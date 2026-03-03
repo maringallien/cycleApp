@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from 'react'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
+import OnboardingOverlay from './OnboardingOverlay'
+import { routesTour } from '../config/tours'
 
 // --- Mini Map Preview Component for List View ---
 function MapPreview({ coordinates }) {
@@ -44,13 +46,21 @@ function MapPreview({ coordinates }) {
     return <div ref={mapRef} className="w-full h-full z-0" />
 }
 
-// Added the onStartRoute prop here
 function RoutesScreen({ onStartRoute }) {
     const [view, setView] = useState('list') // 'list' or 'detail'
     const [selectedRoute, setSelectedRoute] = useState(null)
     const [searchTerm, setSearchTerm] = useState('')
     const [activeTab, setActiveTab] = useState('official') // 'official' or 'personal'
     const detailMapRef = useRef(null)
+
+    // --- ONBOARDING TOUR STATE ---
+    const [tourReady, setTourReady] = useState(false)
+
+    // Give the DOM a tiny fraction of a second to paint before we measure coordinates
+    useEffect(() => {
+        const timer = setTimeout(() => setTourReady(true), 150)
+        return () => clearTimeout(timer)
+    }, [])
 
     // --- Dummy Data (Vancouver Region) ---
     const officialRoutes = [
@@ -244,7 +254,6 @@ function RoutesScreen({ onStartRoute }) {
                         </div>
 
                         <div className="pt-4 pb-4">
-                            {/* Updated onClick handler here to trigger the callback */}
                             <button 
                                 onClick={() => onStartRoute(selectedRoute)}
                                 className="w-full bg-blue-600 text-white font-bold py-4 rounded-xl shadow-lg active:scale-[0.98] transition-transform flex items-center justify-center gap-2"
@@ -260,13 +269,26 @@ function RoutesScreen({ onStartRoute }) {
 
     // --- List View ---
     return (
-        <div className="flex flex-col h-full bg-gray-50">
+        // Added 'routes-screen-container' ID for measuring bounding boxes in the OnboardingOverlay
+        <div id="routes-screen-container" className="flex flex-col h-full bg-gray-50 relative">
+            
+            {/* --- RENDER ONBOARDING TOUR --- */}
+            {tourReady && view === 'list' && (
+                <OnboardingOverlay 
+                    screenKey="routes_tour" 
+                    steps={routesTour} 
+                    containerId="routes-screen-container" // Let the overlay know which container to use for coordinates
+                />
+            )}
+
             {/* Header & Search */}
             <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
                 <div className="p-4 pb-2">
                     <div className="flex justify-between items-center mb-4">
                         <h1 className="text-2xl font-bold text-gray-800">Routes</h1>
+                        {/* Added 'tour-routes-create' ID here for onboarding targeting */}
                         <button 
+                            id="tour-routes-create"
                             onClick={() => alert("Add New Route Flow")}
                             className="bg-blue-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm hover:bg-blue-700 transition-colors"
                         >
@@ -274,7 +296,8 @@ function RoutesScreen({ onStartRoute }) {
                         </button>
                     </div>
                     
-                    <div className="bg-gray-100 rounded-xl px-4 py-3 flex items-center gap-3 focus-within:ring-2 focus-within:ring-blue-500 transition-all">
+                    {/* Added 'tour-routes-search' ID here for onboarding targeting */}
+                    <div id="tour-routes-search" className="bg-gray-100 rounded-xl px-4 py-3 flex items-center gap-3 focus-within:ring-2 focus-within:ring-blue-500 transition-all">
                         <span className="text-gray-400 text-lg">🔍</span>
                         <input 
                             type="text" 
@@ -287,7 +310,8 @@ function RoutesScreen({ onStartRoute }) {
                 </div>
 
                 {/* Tabs */}
-                <div className="flex px-4 mt-2">
+                {/* Added 'tour-routes-tabs' ID here for onboarding targeting */}
+                <div id="tour-routes-tabs" className="flex px-4 mt-2">
                     <button 
                         onClick={() => setActiveTab('official')}
                         className={`flex-1 pb-3 text-sm font-bold border-b-2 transition-colors ${

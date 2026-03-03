@@ -1,4 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import OnboardingOverlay from './OnboardingOverlay'
+import { communityTour } from '../config/tours'
 
 function CommunityScreen() {
   // Navigation State
@@ -10,7 +12,16 @@ function CommunityScreen() {
   
   // Search States
   const [bikeSearchTerm, setBikeSearchTerm] = useState('') 
-  const [groupSearchTerm, setGroupSearchTerm] = useState('') // New search state for groups
+  const [groupSearchTerm, setGroupSearchTerm] = useState('') 
+
+  // --- ONBOARDING TOUR STATE ---
+  const [tourReady, setTourReady] = useState(false)
+
+  // Give the DOM a tiny fraction of a second to paint before we measure coordinates
+  useEffect(() => {
+    const timer = setTimeout(() => setTourReady(true), 150)
+    return () => clearTimeout(timer)
+  }, [])
 
   // --- Dummy Data ---
   const myGroups = [
@@ -342,23 +353,40 @@ function CommunityScreen() {
 
   // 4. Main List View (My Groups + Find Groups + Stolen Bikes)
   return (
-    <div className="flex flex-col h-full bg-gray-50">
+    <div id="community-screen-container" className="flex flex-col h-full bg-gray-50 relative">
+      
+      {/* --- RENDER ONBOARDING TOUR --- */}
+      {tourReady && view === 'list' && activeTab === 'my-groups' && (
+        <OnboardingOverlay 
+            screenKey="community_tour" 
+            steps={communityTour} 
+            containerId="community-screen-container"
+        />
+      )}
+
       <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
         <h1 className="text-2xl font-bold text-gray-800 p-4 pb-2">Community</h1>
         <div className="flex px-4 gap-6 overflow-x-auto">
+          
+          {/* UPDATED: We wrap ONLY the group tabs inside the ID used for the tour targeting */}
+          <div id="tour-community-tabs" className="flex gap-6">
+            <button 
+              onClick={() => setActiveTab('my-groups')}
+              className={`pb-3 text-sm font-bold border-b-2 transition-colors whitespace-nowrap ${activeTab === 'my-groups' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-400'}`}
+            >
+              My Groups
+            </button>
+            <button 
+              onClick={() => setActiveTab('find-groups')}
+              className={`pb-3 text-sm font-bold border-b-2 transition-colors whitespace-nowrap ${activeTab === 'find-groups' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-400'}`}
+            >
+              Find Groups
+            </button>
+          </div>
+
+          {/* Stolen Bikes sits outside the highlighted wrapper */}
           <button 
-            onClick={() => setActiveTab('my-groups')}
-            className={`pb-3 text-sm font-bold border-b-2 transition-colors whitespace-nowrap ${activeTab === 'my-groups' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-400'}`}
-          >
-            My Groups
-          </button>
-          <button 
-            onClick={() => setActiveTab('find-groups')}
-            className={`pb-3 text-sm font-bold border-b-2 transition-colors whitespace-nowrap ${activeTab === 'find-groups' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-400'}`}
-          >
-            Find Groups
-          </button>
-          <button 
+            id="tour-community-theft-tab"
             onClick={() => setActiveTab('stolen-bikes')}
             className={`pb-3 text-sm font-bold border-b-2 transition-colors whitespace-nowrap ${activeTab === 'stolen-bikes' ? 'border-red-600 text-red-600' : 'border-transparent text-gray-400'}`}
           >
@@ -370,8 +398,12 @@ function CommunityScreen() {
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {activeTab === 'my-groups' && (
           <div className="space-y-4">
-            {myGroups.map(group => (
-              <div key={group.id} className="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
+            {myGroups.map((group, index) => (
+              <div 
+                key={group.id} 
+                id={index === 0 ? 'tour-community-group' : undefined} 
+                className="bg-white p-5 rounded-xl shadow-sm border border-gray-200"
+              >
                 <div className="flex justify-between items-start mb-2">
                   <h3 className="font-bold text-xl text-gray-800">{group.name}</h3>
                   <span className="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs font-bold">{group.role}</span>
@@ -406,8 +438,6 @@ function CommunityScreen() {
         {/* Find Groups Tab View */}
         {activeTab === 'find-groups' && (
           <div className="space-y-4">
-             
-             {/* Search Input for Find Groups */}
              <div className="bg-white rounded-xl px-4 py-3 flex items-center gap-3 focus-within:ring-2 focus-within:ring-blue-500 transition-all border border-gray-200 shadow-sm">
                  <span className="text-gray-400 text-lg">🔍</span>
                  <input 
@@ -419,7 +449,6 @@ function CommunityScreen() {
                  />
              </div>
 
-             {/* Empty Search Results State */}
              {filteredGroups.length === 0 && (
                  <div className="text-center py-10">
                      <span className="text-4xl block mb-2">🕵️</span>
@@ -450,7 +479,6 @@ function CommunityScreen() {
         {/* Stolen Bikes Tab View */}
         {activeTab === 'stolen-bikes' && (
             <div className="space-y-4">
-                {/* Search Input for Theft Feature */}
                 <div className="bg-white rounded-xl px-4 py-3 flex items-center gap-3 focus-within:ring-2 focus-within:ring-red-500 transition-all border border-gray-200 shadow-sm">
                     <span className="text-gray-400 text-lg">🔍</span>
                     <input 
@@ -462,7 +490,6 @@ function CommunityScreen() {
                     />
                 </div>
 
-                {/* Report Button CTA */}
                 <button 
                     onClick={handleReportStolen}
                     className="w-full bg-red-600 text-white p-4 rounded-xl shadow-md flex items-center justify-center gap-2 font-bold active:bg-red-700 transition-colors"
@@ -475,7 +502,6 @@ function CommunityScreen() {
                     <div className="h-px bg-gray-200 flex-1"></div>
                 </div>
 
-                {/* Empty Search Results State */}
                 {filteredStolenBikes.length === 0 && (
                     <div className="text-center py-10">
                         <span className="text-4xl block mb-2">🚲</span>
