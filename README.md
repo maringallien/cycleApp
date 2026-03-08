@@ -41,15 +41,15 @@ cd cycleapp
 This project requires several key packages, including Leaflet for maps and Tailwind CSS for styling. Install them all using:
 
 ```sql
-# Install npm
-npm install
-
 # Install nvm
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
 
 # Install and use Node 22
 nvm install 22
 nvm use 22
+
+# Install npm
+npm install
 ```
 
 1. **Run CycleApp**
