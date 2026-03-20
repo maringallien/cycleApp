@@ -22,8 +22,19 @@ CycleApp is a React-based web application cycling application combining speciali
 
 Before you begin, ensure you have the following installed:
 
-- [Node.js](https://nodejs.org/) (Latest LTS version recommended)
+- [Node.js](https://nodejs.org/) v22+ (use [nvm](https://github.com/nvm-sh/nvm) to manage versions)
 - npm (comes bundled with Node.js)
+
+If you need to install nvm and Node.js 22:
+
+```bash
+# Install nvm
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+
+# Install and use Node 22
+nvm install 22
+nvm use 22
+```
 
 ## Installation
 
@@ -31,32 +42,21 @@ To get the project running locally, follow these steps:
 
 1. **Clone the repository**:
 
-```sql
+```bash
 git clone https://github.com/maringallien/cycleApp
-cd cycleapp
+cd cycleApp
 ```
 
-1. **Install dependencies:**
+2. **Install dependencies:**
 
-This project requires several key packages, including Leaflet for maps and Tailwind CSS for styling. Install them all using:
-
-```sql
-# Install nvm
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
-
-# Install and use Node 22
-nvm install 22
-nvm use 22
-
-# Install npm
+```bash
 npm install
 ```
 
-1. **Run CycleApp**
+3. **Run CycleApp**
 
-```sql
-npm run dev 
-
-# In browser:
-http://localhost:5173/
+```bash
+npm run dev
 ```
+
+Then open [http://localhost:5173/](http://localhost:5173/) in your browser.

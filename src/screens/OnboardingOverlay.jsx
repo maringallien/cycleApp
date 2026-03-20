@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback } from 'react'
 
 const STORAGE_PREFIX = 'cycleapp_onboarding_'
 
-// ADDED: containerId prop with a fallback to the home screen
 function OnboardingOverlay({ screenKey, steps, onComplete, containerId = 'home-screen-container' }) {
   const [currentStep, setCurrentStep] = useState(0)
   const [visible, setVisible] = useState(false)
@@ -50,7 +49,6 @@ function OnboardingOverlay({ screenKey, steps, onComplete, containerId = 'home-s
 
   const getTargetBounds = (id) => {
     const el = document.getElementById(id)
-    // UPDATED: Now uses the dynamic containerId prop!
     const parent = document.getElementById(containerId)
     
     if (!el || !parent) return { top: '0px', left: '0px', width: '0px', height: '0px', borderRadius: '12px' }
