@@ -1,13 +1,15 @@
+import DetailHeader from '../ui/DetailHeader'
+
 export default function GroupHome({ group, handleBack, handleViewBattle }) {
   if (!group) return null;
 
   return (
     <div className="flex flex-col h-full bg-gray-50 relative">
-      <div className="bg-white p-4 border-b border-gray-200 sticky top-0 flex items-center gap-3 z-10">
-        <button onClick={handleBack} className="text-gray-500 font-bold">← Back</button>
-        <h1 className="text-lg font-bold flex-1">{group.name}</h1>
-        <button className="text-gray-400">⚙️</button>
-      </div>
+      <DetailHeader
+        onBack={handleBack}
+        title={group.name}
+        rightSlot={<button className="text-gray-400">⚙️</button>}
+      />
 
       <div className="flex-1 overflow-y-auto p-4 space-y-5">
         <section className="bg-yellow-50 border border-yellow-200 p-3 rounded-lg text-sm text-yellow-800 flex gap-2">
@@ -19,7 +21,7 @@ export default function GroupHome({ group, handleBack, handleViewBattle }) {
           <h2 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2">⚔️ Active Battles</h2>
           <div className="space-y-3">
             {group.battles.map(battle => (
-              <div 
+              <div
                 key={battle.id}
                 onClick={() => handleViewBattle(battle)}
                 className="bg-white p-3 rounded-xl shadow-sm border border-gray-200 flex justify-between items-center active:bg-gray-50 transition-colors cursor-pointer"

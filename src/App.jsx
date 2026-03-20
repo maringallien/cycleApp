@@ -59,16 +59,7 @@ function App() {
           />
         )
       default:
-        return (
-          <HomeScreen 
-            activeTerritorySession={activeTerritorySession} 
-            setActiveTerritorySession={setActiveTerritorySession}
-            isTracingRoute={isTracingRoute} 
-            onStopTracing={() => setIsTracingRoute(false)}
-            isDefending={isDefending} 
-            onStopDefending={() => setIsDefending(false)}
-          />
-        )
+        return null
     }
   }
 

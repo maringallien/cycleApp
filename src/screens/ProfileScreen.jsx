@@ -1,41 +1,30 @@
 import { useState } from 'react'
-
-// Import Sub-components
+import ToggleSwitch from '../components/ui/ToggleSwitch'
 import RideDetail from '../components/profile/RideDetail'
-import ProfileBattleDetail from '../components/profile/ProfileBattleDetail'
-
-// Import Mock Data
-import { 
-  userProfile, 
-  bikes, 
-  weeklyData, 
-  rideHistory, 
-  personalTerritories, 
-  dummyBattleDetails 
+import BattleDetail from '../components/community/BattleDetail'
+import {
+  userProfile,
+  bikes,
+  weeklyData,
+  rideHistory,
+  personalTerritories,
+  dummyBattleDetails
 } from '../data/mockProfileData'
 
 function ProfileScreen({ onStartDefending }) {
-  // --- State Definitions ---
   const [notifications, setNotifications] = useState(true)
   const [offlineMode, setOfflineMode] = useState(false)
-  
-  // Navigation State
-  const [view, setView] = useState('profile') // 'profile', 'ride-detail', or 'battle-detail'
+  const [view, setView] = useState('profile')
   const [selectedRide, setSelectedRide] = useState(null)
   const [selectedBattle, setSelectedBattle] = useState(null)
 
-  // --- Actions ---
   const handleRideClick = (ride) => {
     setSelectedRide(ride)
     setView('ride-detail')
   }
 
   const handleTerritoryClick = (territory) => {
-    setSelectedBattle({
-      zone: territory.name,
-      enemy: 'Rival Crew',
-      ...dummyBattleDetails
-    })
+    setSelectedBattle({ zone: territory.name, enemy: 'Rival Crew', ...dummyBattleDetails })
     setView('battle-detail')
   }
 
@@ -45,19 +34,17 @@ function ProfileScreen({ onStartDefending }) {
     setView('profile')
   }
 
-  // --- Render Sub-Views ---
   if (view === 'battle-detail') {
-    return <ProfileBattleDetail battle={selectedBattle} handleBack={handleBackToProfile} onStartDefending={onStartDefending} />
+    return <BattleDetail battle={selectedBattle} handleBack={handleBackToProfile} onStartDefending={onStartDefending} variant="profile" />
   }
 
   if (view === 'ride-detail') {
     return <RideDetail ride={selectedRide} handleBack={handleBackToProfile} />
   }
 
-  // --- Render: Main Profile View ---
   return (
     <div className="bg-gray-50 min-h-full pb-8">
-      
+
       {/* Header Profile Card */}
       <div className="bg-white p-6 border-b border-gray-200 shadow-sm flex flex-col items-center">
         <div className={`w-24 h-24 rounded-full ${userProfile.avatarColor} flex items-center justify-center text-4xl mb-3 shadow-inner`}>
@@ -67,8 +54,7 @@ function ProfileScreen({ onStartDefending }) {
         <div className="text-blue-600 font-medium text-sm px-3 py-1 bg-blue-50 rounded-full mt-1">
           {userProfile.type}
         </div>
-        
-        {/* Quick Stats Row */}
+
         <div className="flex w-full justify-between mt-6 px-4 divide-x divide-gray-200">
           <div className="flex-1 text-center">
             <div className="font-bold text-gray-800">{userProfile.stats.rides}</div>
@@ -86,23 +72,20 @@ function ProfileScreen({ onStartDefending }) {
       </div>
 
       <div className="p-4 space-y-4">
-        
+
         {/* Weekly Activity Chart */}
         <section>
           <h2 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2 ml-1">Weekly Activity</h2>
           <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
             <div className="flex justify-between items-end h-24">
-                {weeklyData.map((d, i) => (
+              {weeklyData.map((d, i) => (
                 <div key={i} className="flex flex-col items-center gap-1 w-8">
-                    <div className="w-full bg-gray-100 rounded-t-sm relative h-16 flex items-end overflow-hidden">
-                    <div 
-                        className="w-full bg-blue-500 rounded-t-sm"
-                        style={{ height: d.height }}
-                    ></div>
-                    </div>
-                    <span className="text-[10px] text-gray-500 font-bold">{d.day}</span>
+                  <div className="w-full bg-gray-100 rounded-t-sm relative h-16 flex items-end overflow-hidden">
+                    <div className="w-full bg-blue-500 rounded-t-sm" style={{ height: d.height }}></div>
+                  </div>
+                  <span className="text-[10px] text-gray-500 font-bold">{d.day}</span>
                 </div>
-                ))}
+              ))}
             </div>
           </div>
         </section>
@@ -111,31 +94,29 @@ function ProfileScreen({ onStartDefending }) {
         <section>
           <h2 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2 ml-1">My Territories</h2>
           <div className="max-h-60 overflow-y-auto pr-1 space-y-3 pb-1">
-              {personalTerritories.map((territory) => (
-              <button 
-                  key={territory.id}
-                  onClick={() => handleTerritoryClick(territory)}
-                  className="w-full bg-white p-3 rounded-xl shadow-sm border border-gray-200 flex items-center gap-3 text-left transition-transform active:scale-[0.98]"
+            {personalTerritories.map((territory) => (
+              <button
+                key={territory.id}
+                onClick={() => handleTerritoryClick(territory)}
+                className="w-full bg-white p-3 rounded-xl shadow-sm border border-gray-200 flex items-center gap-3 text-left transition-transform active:scale-[0.98]"
               >
-                  <div 
-                    className="w-10 h-10 rounded-full flex items-center justify-center text-base shrink-0 shadow-inner text-white"
-                    style={{ backgroundColor: territory.color }}
-                  >
-                    🚩
-                  </div>
-                  
-                  <div className="flex-1">
-                    <div className="font-bold text-gray-800 text-sm">{territory.name}</div>
-                    <div className="text-[10px] text-gray-500">{territory.detail}</div>
-                  </div>
-
-                  <div className="text-right">
-                    <span className={`text-[10px] font-bold px-2 py-1 rounded ${territory.status === 'Claimed' ? 'bg-green-100 text-green-700' : territory.status === 'Lost' ? 'bg-gray-100 text-gray-600' : 'bg-amber-100 text-amber-700'}`}>
-                        {territory.status}
-                    </span>
-                  </div>
+                <div
+                  className="w-10 h-10 rounded-full flex items-center justify-center text-base shrink-0 shadow-inner text-white"
+                  style={{ backgroundColor: territory.color }}
+                >
+                  🚩
+                </div>
+                <div className="flex-1">
+                  <div className="font-bold text-gray-800 text-sm">{territory.name}</div>
+                  <div className="text-[10px] text-gray-500">{territory.detail}</div>
+                </div>
+                <div className="text-right">
+                  <span className={`text-[10px] font-bold px-2 py-1 rounded ${territory.status === 'Claimed' ? 'bg-green-100 text-green-700' : territory.status === 'Lost' ? 'bg-gray-100 text-gray-600' : 'bg-amber-100 text-amber-700'}`}>
+                    {territory.status}
+                  </span>
+                </div>
               </button>
-              ))}
+            ))}
           </div>
         </section>
 
@@ -167,27 +148,25 @@ function ProfileScreen({ onStartDefending }) {
         <section>
           <h2 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2 ml-1">Recent Rides</h2>
           <div className="max-h-64 overflow-y-auto pr-1 space-y-3 pb-1">
-              {rideHistory.map((ride) => (
-              <button 
-                  key={ride.id}
-                  onClick={() => handleRideClick(ride)}
-                  className="w-full bg-white p-3 rounded-xl shadow-sm border border-gray-200 flex items-center gap-3 text-left transition-transform active:scale-[0.98]"
+            {rideHistory.map((ride) => (
+              <button
+                key={ride.id}
+                onClick={() => handleRideClick(ride)}
+                className="w-full bg-white p-3 rounded-xl shadow-sm border border-gray-200 flex items-center gap-3 text-left transition-transform active:scale-[0.98]"
               >
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center text-base shrink-0
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center text-base shrink-0
                   ${ride.mode === 'Safe' ? 'bg-green-100' : ride.mode === 'Direct' ? 'bg-blue-100' : 'bg-yellow-100'}`}>
                   {ride.mode === 'Safe' ? '🛡️' : ride.mode === 'Direct' ? '🛤️' : '🧭'}
-                  </div>
-                  
-                  <div className="flex-1">
+                </div>
+                <div className="flex-1">
                   <div className="font-bold text-gray-800 text-xs">{ride.route}</div>
                   <div className="text-[10px] text-gray-500">{ride.date}</div>
-                  </div>
-
-                  <div className="text-right">
+                </div>
+                <div className="text-right">
                   <div className="font-bold text-gray-800 text-xs">{ride.distance}</div>
-                  </div>
+                </div>
               </button>
-              ))}
+            ))}
           </div>
         </section>
 
@@ -209,23 +188,17 @@ function ProfileScreen({ onStartDefending }) {
                 <div className="font-medium text-gray-800">Safety Alerts</div>
                 <div className="text-xs text-gray-500">Warn about high traffic areas</div>
               </div>
-              <button 
-                onClick={() => setNotifications(!notifications)}
-                className={`w-12 h-7 rounded-full transition-colors flex items-center px-1 ${notifications ? 'bg-blue-600' : 'bg-gray-300'}`}
-              >
-                <div className={`w-5 h-5 bg-white rounded-full shadow transform transition-transform ${notifications ? 'translate-x-5' : ''}`}></div>
+              <button onClick={() => setNotifications(!notifications)}>
+                <ToggleSwitch checked={notifications} size="lg" />
               </button>
             </div>
-             <div className="p-4 flex items-center justify-between">
+            <div className="p-4 flex items-center justify-between">
               <div>
                 <div className="font-medium text-gray-800">Offline Maps</div>
                 <div className="text-xs text-gray-500">Save data usage</div>
               </div>
-              <button 
-                onClick={() => setOfflineMode(!offlineMode)}
-                className={`w-12 h-7 rounded-full transition-colors flex items-center px-1 ${offlineMode ? 'bg-blue-600' : 'bg-gray-300'}`}
-              >
-                <div className={`w-5 h-5 bg-white rounded-full shadow transform transition-transform ${offlineMode ? 'translate-x-5' : ''}`}></div>
+              <button onClick={() => setOfflineMode(!offlineMode)}>
+                <ToggleSwitch checked={offlineMode} size="lg" />
               </button>
             </div>
           </div>

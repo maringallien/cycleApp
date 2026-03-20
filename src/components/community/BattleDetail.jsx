@@ -1,14 +1,19 @@
-export default function BattleDetail({ battle, handleBack, onStartDefending }) {
+import DetailHeader from '../ui/DetailHeader'
+
+export default function BattleDetail({ battle, handleBack, onStartDefending, variant = 'community' }) {
   if (!battle) return null;
 
-  return (
-    <div className="flex flex-col h-full bg-gray-50 relative">
-      <div className="bg-white p-4 border-b border-gray-200 sticky top-0 flex items-center gap-3 z-10">
-        <button onClick={handleBack} className="text-gray-500 font-bold">← Back</button>
-        <h1 className="text-lg font-bold flex-1">Battle: {battle.zone}</h1>
-      </div>
+  const isProfile = variant === 'profile'
 
-      <div className="flex-1 overflow-y-auto p-4 space-y-6">
+  return (
+    <div className={`flex flex-col ${isProfile ? 'min-h-full' : 'h-full'} bg-gray-50 relative`}>
+      <DetailHeader
+        onBack={handleBack}
+        title={`Battle: ${battle.zone}`}
+        rightSlot={isProfile ? <div className="w-10" /> : null}
+      />
+
+      <div className={`flex-1 overflow-y-auto p-4 space-y-6${isProfile ? ' pb-8' : ''}`}>
         <div className="bg-gray-200 h-56 rounded-xl relative overflow-hidden shadow-inner border border-gray-300 flex items-center justify-center">
           <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle,_var(--tw-gradient-stops))] from-gray-400 to-transparent"></div>
           <div className="w-32 h-32 bg-red-500/80 rounded-full blur-xl absolute top-10 left-10 animate-pulse"></div>
@@ -54,9 +59,9 @@ export default function BattleDetail({ battle, handleBack, onStartDefending }) {
             </div>
           </div>
         </div>
-        
-        <button 
-          onClick={onStartDefending} 
+
+        <button
+          onClick={onStartDefending}
           className="w-full py-4 bg-green-600 text-white font-bold rounded-xl shadow-lg active:scale-[0.98] transition-transform"
         >
           Ride to Defend Area 🚴

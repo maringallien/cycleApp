@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
+import useTourReady from '../hooks/useTourReady'
 import { MapContainer, TileLayer, CircleMarker, Circle, Polygon, useMapEvents } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css' 
 
@@ -44,23 +45,8 @@ function HomeScreen({ activeTerritorySession, setActiveTerritorySession, isTraci
   const [selectedTerritory, setSelectedTerritory] = useState(null)
   const [isClaiming, setIsClaiming] = useState(false)
 
-  // Onboarding Tour States
-  const [tour1Ready, setTour1Ready] = useState(false)
-  const [tour2Ready, setTour2Ready] = useState(false)
-
-  useEffect(() => {
-    const timer = setTimeout(() => setTour1Ready(true), 150)
-    return () => clearTimeout(timer)
-  }, [])
-
-  useEffect(() => {
-    if (isLayersMenuOpen) {
-      const timer = setTimeout(() => setTour2Ready(true), 150)
-      return () => clearTimeout(timer)
-    } else {
-      setTour2Ready(false)
-    }
-  }, [isLayersMenuOpen])
+  const tour1Ready = useTourReady()
+  const tour2Ready = useTourReady(150, isLayersMenuOpen)
 
   const mapCenter = [49.2827, -123.1207]
 
